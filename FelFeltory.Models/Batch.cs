@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FelFeltory.Models
 {
@@ -32,13 +29,13 @@ namespace FelFeltory.Models
         /// <summary>
         /// Quantity of Portions at Batch creation.
         /// </summary>
-        [JsonProperty("batchSize")]
+        [JsonProperty("size")]
         public int BatchSize { get; set; }
 
         /// <summary>
         /// Id of the Product of the Batch.
         /// </summary>
-        [JsonProperty("productId")]
+        [JsonProperty("pid")]
         public Guid ProductId { get; set; }
 
         /// <summary>

@@ -8,4 +8,13 @@
     <ProjectReference Include="..\FelFeltory.Models\FelFeltory.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\batches.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\products.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

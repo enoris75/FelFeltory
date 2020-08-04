@@ -66,9 +66,12 @@ namespace FelFeltory.Controllers
         /// <returns>An IEnumerable of Batches having the requested Freshness.</returns>
         [HttpGet]
         [Route("BatchesByFreshness")]
-        public async Task<ActionResult<IEnumerable<Batch>>> GetBatchesByFreshness([FromRoute] Freshness freshness)
+        public async Task<ActionResult<IEnumerable<Batch>>> GetBatchesByFreshness([FromQuery] Freshness freshness)
         {
-            return Ok("Not implemented yet");
+            IEnumerable<Batch> batches =
+                await this.AccessService.GetBatches(freshness);
+
+            return Ok(batches);
         }
 
         /// <summary>

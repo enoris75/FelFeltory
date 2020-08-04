@@ -24,6 +24,11 @@ namespace FelFeltory.DataAccess
         // an external file written in the hiddenness of my COVID dungeon.
 
         /// <summary>
+        /// The JsonSerializer to use for JSON serialization and de-serialization.
+        /// </summary>
+        private readonly JsonSerializer serializer = JsonSerializer.CreateDefault();
+
+        /// <summary>
         /// Get All Product Definitions.
         /// </summary>
         /// <returns>
@@ -52,18 +57,20 @@ namespace FelFeltory.DataAccess
         /// </returns
         public async Task<IEnumerable<Batch>> GetBatches(Freshness? freshness)
         {
-            using (StreamReader file = File.OpenText(@"..\FelFeltory.DataAccess\Data\products.json"))
+            using (StreamReader file = File.OpenText(@"..\FelFeltory.DataAccess\Data\batches.json"))
+            using (JsonReader reader = new JsonTextReader(file))
             {
-                JsonSerializer serializer = new JsonSerializer();
-                IEnumerable<Batch> allBatches =
-                    (IEnumerable<Batch>)serializer.Deserialize(file, typeof(IEnumerable<Batch>));
+
+                IEnumerable<Batch> allBatches = serializer.Deserialize<IEnumerable<Batch>>(reader);
 
                 if (freshness == null)
                 {
                     return allBatches;
                 }
 
-                IEnumerable<Batch> batches = allBatches.Where(b => b.Freshness == freshness);
+                IEnumerable<Batch> batches = allBatches.Where(
+                    b => b.Freshness == freshness
+                    );
                 return batches;
             }
         }
