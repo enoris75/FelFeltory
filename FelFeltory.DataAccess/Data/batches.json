@@ -1,0 +1,23 @@
+[
+    {
+        "id": "44e5b691-83c6-4505-a273-37101d917ed6",
+        "expiration": "2020-08-15T00:00:00Z",
+        "availableQuantity": 60,
+        "batchSize": 1000,
+        "productId": "f92471b9-c486-4716-9934-600b59904ce5"
+    },
+    {
+        "id": "17c861ef-4e3d-45db-9465-caa06586da0d",
+        "expiration": "2020-08-15T00:00:00Z",
+        "availableQuantity": 1000,
+        "batchSize": 1000,
+        "productId": "0824cc00-c1a0-4726-beca-923abd6f6dd4"
+    },
+    {
+        "id": "d0998ba9-bd2e-4849-bf70-fcc61b759ee4",
+        "expiration": "2020-08-15T00:00:00Z",
+        "availableQuantity": 499,
+        "batchSize": 600,
+        "productId": "2c3d8961-761b-4f94-be39-d7210758012e"
+    }
+]

@@ -1,0 +1,17 @@
+[
+    {
+        "id": "f92471b9-c486-4716-9934-600b59904ce5",
+        "name": "Cannelloni al formaggio",
+        "description": "Cannelloni al formaggio by Chef Giovanni"
+    },
+    {
+        "id": "0824cc00-c1a0-4726-beca-923abd6f6dd4",
+        "name": "Dumplings soup",
+        "description": "Dumplings soup by Suppärteam"
+    },
+    {
+        "id": "2c3d8961-761b-4f94-be39-d7210758012e",
+        "name": "Züri Geschnätzlets",
+        "description": "Züri Geschnätzlets by Chefs Paul and Lulu"
+    }
+]
