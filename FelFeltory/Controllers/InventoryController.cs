@@ -52,7 +52,6 @@ namespace FelFeltory.Controllers
             Batch b1 = new Batch();
             b1.Expiration = new DateTime();
             b1.ProductId = new Guid();
-            b1.ProductDescription = "Lorem Ipsum dolor";
             b1.AvailableQuantity = 999;
             b1.BatchSize = 1000;
             batchList.Add(b1);

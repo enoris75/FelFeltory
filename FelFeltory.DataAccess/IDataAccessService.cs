@@ -24,6 +24,6 @@ namespace FelFeltory.DataAccess
         /// <returns>
         /// A Task which will resolve into an IEnumerable of Products.
         /// </returns>
-        Task<IEnumerable<Batch>> GetAllBatches();
+        Task<IEnumerable<Batch>> GetBatches(Freshness? freshness);
     }
 }

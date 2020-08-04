@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using FelFeltory.Models;
 using System.IO;
+using System.Linq;
 
 namespace FelFeltory.DataAccess
 {
@@ -43,17 +44,26 @@ namespace FelFeltory.DataAccess
         /// Gets all Batches in the Inventory which still have available
         /// Portions.
         /// </summary>
+        /// <param name="freshness">
+        /// Freshness of the Batch. If the parameter is not passed then all Batches are returned.
+        /// </param>
         /// <returns>
         /// A Task which will resolve into an IEnumerable of Products.
-        /// </returns>
-        public async Task<IEnumerable<Batch>> GetAllBatches()
+        /// </returns
+        public async Task<IEnumerable<Batch>> GetBatches(Freshness? freshness)
         {
             using (StreamReader file = File.OpenText(@"..\FelFeltory.DataAccess\Data\products.json"))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                IEnumerable<Batch> batches =
+                IEnumerable<Batch> allBatches =
                     (IEnumerable<Batch>)serializer.Deserialize(file, typeof(IEnumerable<Batch>));
 
+                if (freshness == null)
+                {
+                    return allBatches;
+                }
+
+                IEnumerable<Batch> batches = allBatches.Where(b => b.Freshness == freshness);
                 return batches;
             }
         }
