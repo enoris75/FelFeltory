@@ -18,7 +18,7 @@ namespace FelFeltory.Models
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Expiration Date of the Batch.
+        /// Expiration Date of the Batch (in UTC).
         /// </summary>
         [JsonProperty("expiration")]
         public DateTime Expiration { get; set; }
@@ -42,8 +42,27 @@ namespace FelFeltory.Models
         public Guid ProductId { get; set; }
 
         /// <summary>
-        /// Freshness of the Batch.
+        /// Get the freshness of the Batch based on the Expiration date and the current date/time.
         /// </summary>
-        public Freshness Freshness { get; set; }
+        public Freshness Freshness
+        {
+            get
+            {
+                if (DateTime.UtcNow > this.Expiration)
+                {
+                    return Freshness.Expired;
+                }
+                else if (DateTime.UtcNow.AddDays(1) > this.Expiration)
+                {
+                    // Note: Expiring today is calculated as expiring within the next 24 hours,
+                    // not necessarily by the end of the current day.
+                    return Freshness.ExpiringToday;
+                }
+                else
+                {
+                    return Freshness.Fresh;
+                }
+            }
+        }
     }
 }

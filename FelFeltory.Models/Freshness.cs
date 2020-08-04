@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 namespace FelFeltory.Models
 {
     /// <summary>
-    /// Class containing the definition of Freshness.
+    /// Enum containing the definition of Freshness.
     /// </summary>
-    public sealed class Freshness
+    public enum Freshness
     {
         /// <summary>
         /// Fresh: more than 1 day of shelf life remaining.
         /// </summary>
-        public static readonly string Fresh = "Fresh";
+        Fresh,
         /// <summary>
         /// Expiring Today.
         /// </summary>
-        public static readonly string ExpiringToday = "Expiring Today";
+        ExpiringToday,
         /// <summary>
         /// Already Expired.
         /// </summary>
-        public static readonly string Expired = "Expired";
+        Expired
     }
 }
