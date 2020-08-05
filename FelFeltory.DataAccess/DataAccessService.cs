@@ -122,9 +122,9 @@ namespace FelFeltory.DataAccess
             // Get all Batches
             IEnumerable<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
             // Get the Batch with the correct ID
-            IEnumerable<Batch> selectedBatches = allBatches.Where(
+            List<Batch> selectedBatches = allBatches.Where(
                 b => b.Id == batchId
-                );
+                ).ToList();
             int count = selectedBatches.Count<Batch>();
             // Note there should be exactly one batch with the given ID
             if (count == 0)
@@ -161,11 +161,17 @@ namespace FelFeltory.DataAccess
                     + " are available"
                     );
             }
+
+            List<Batch> updatedList = allBatches.ToList();
+            // Remove the element to be updated from the list
+            updatedList.Remove(batch);
             // Change the available quantity in the batch
             batch.AvailableQuantity -= quantity;
-
-            await WriteData(this.fileBatches, allBatches);
-
+            // Re-add it to the list
+            updatedList.Add(batch);
+            // Update the batches file
+            await WriteData(this.fileBatches, updatedList);
+            // Return the updated batch
             return batch;
         }
 

@@ -115,13 +115,25 @@ namespace FelFeltory.Controllers
         /// A Task which results in an IActionResult describing the outcome of the operation.
         /// </returns>
         [HttpPost]
-        [Route("RemoveFromBatch")]
+        [Route("RemoveFromBatch/{batchId}/{quantity}/")]
         public async Task<IActionResult> RemoveFromBatch(
-            [FromRoute] Guid id,
-            [FromBody] int quantity
+            [FromRoute] Guid batchId,
+            [FromRoute] int quantity
             )
         {
-            return Ok("Not implemented yet");
+            if (quantity < 0)
+            {
+                return BadRequest(new
+                {
+                    error = "invalid quantity",
+                    description = "the quantity cannot be negative"
+                });
+            }
+
+            Batch updatedBatch =
+                await this.AccessService.RemoveFromBatch(batchId, quantity);
+
+            return Ok(updatedBatch);
         }
 
         /// <summary>

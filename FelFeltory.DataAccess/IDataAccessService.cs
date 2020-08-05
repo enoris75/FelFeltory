@@ -56,5 +56,19 @@ namespace FelFeltory.DataAccess
         /// A Task which will resolve in a Batch instance containing the newly added Batch.
         /// </returns>
         Task<Batch> AddBatch(Guid productId, int batchSize, DateTime expirationDate);
+
+        /// <summary>
+        /// Removes the given quantity of Portions from the Batch available stock.
+        /// </summary>
+        /// <param name="batchId">
+        /// ID of the Batch the Portions are removed from.
+        /// </param>
+        /// <param name="quantity">
+        /// Quantity of Portions to remove.
+        /// </param>
+        /// <returns>
+        /// A Task which will resolve in a Batch instance containing the upadted Batch.
+        /// </returns>
+        Task<Batch> RemoveFromBatch(Guid batchId, int quantity);
     }
 }
