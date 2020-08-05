@@ -58,8 +58,8 @@ namespace FelFeltory.Controllers
         /// <param name="freshness">Freshness of the Batch (e.g. Fresh, Expiring, Expired)</param>
         /// <returns>An IEnumerable of Batches having the requested Freshness.</returns>
         [HttpGet]
-        [Route("BatchesByFreshness")]
-        public async Task<ActionResult<IEnumerable<Batch>>> GetBatchesByFreshness([FromQuery] Freshness freshness)
+        [Route("BatchesByFreshness/{freshness}")]
+        public async Task<ActionResult<IEnumerable<Batch>>> GetBatchesByFreshness([FromRoute] Freshness freshness)
         {
             IEnumerable<Batch> batches =
                 await this.AccessService.GetBatches(freshness);
@@ -143,13 +143,18 @@ namespace FelFeltory.Controllers
         /// <param name="newExpirationDate">New Expiration Date</param>
         /// <returns></returns>
         [HttpPatch]
-        [Route("FixExpirationDate")]
+        [Route("FixExpirationDate/{batchId}/{newExpirationDate}/")]
         public async Task<IActionResult> FixExpirationDate(
-            [FromRoute] Guid id,
-            [FromBody] DateTime newExpirationDate
+            [FromRoute] Guid batchId,
+            [FromRoute] DateTime newExpirationDate
             )
         {
-            return Ok("Not implemented yet");
+            Batch batch = await this.AccessService.FixExpirationDate(
+                    batchId,
+                    newExpirationDate
+                );
+
+            return Ok(batch);
         }
     }
 }

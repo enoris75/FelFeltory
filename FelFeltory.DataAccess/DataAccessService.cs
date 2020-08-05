@@ -83,6 +83,30 @@ namespace FelFeltory.DataAccess
         }
 
         /// <summary>
+        /// Gets the history of the given Batch.
+        /// </summary>
+        /// <param name="id">
+        /// ID identifying the batch.
+        /// </param>
+        /// <returns>
+        /// A Task which will resolve in to an IEnumerable of Batch Events.
+        /// </returns>
+        public async Task<IEnumerable<BatchEvent>> GetBatchHistory(Guid id)
+        {
+            // Get all Batches
+            List<BatchEvent> allEvents =
+                await this.GetData<BatchEvent>(this.fileBatchEvents);
+            // Filter the batches by ID.
+            List<BatchEvent> events = allEvents.Where(
+                e => e.BatchId == id
+                ).OrderBy(
+                    e => e.EventDate
+                ).ToList();
+
+            return events;
+        }
+
+        /// <summary>
         /// Adds a new Batch to the inventory based on the passed parameters.
         /// </summary>
         /// <param name="productId">ID of the Product the Batch is made of.</param>
@@ -94,13 +118,13 @@ namespace FelFeltory.DataAccess
         public async Task<Batch> AddBatch(Guid productId, int batchSize, DateTime expirationDate)
         {
             // Get all Batches
-            IEnumerable<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
-            // Add the new Batch to the list
+            List<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+            // Create the new Batch
             Batch newBatch = Batch.GetInstance(productId, batchSize, expirationDate);
-            List<Batch> updatedList = allBatches.ToList();
-            updatedList.Add(newBatch);
+            // Add the new Batch to the list
+            allBatches.Add(newBatch);
             // Write the list into a File
-            await WriteData(this.fileBatches, updatedList);
+            await WriteData(this.fileBatches, allBatches);
 
             return newBatch;
         }
@@ -115,14 +139,92 @@ namespace FelFeltory.DataAccess
         /// Quantity of Portions to remove.
         /// </param>
         /// <returns>
-        /// A Task which will resolve in a Batch instance containing the upadted Batch.
+        /// A Task which will resolve in a Batch instance with the updated data.
         /// </returns>
         public async Task<Batch> RemoveFromBatch(Guid batchId, int quantity)
         {
-            // Get all Batches
-            IEnumerable<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+            // Get the list of all Batches
+            List<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+            // Get the Batch
+            Batch batch = await this.GetBatch(batchId, allBatches);
+            if (batch.AvailableQuantity < quantity)
+            {
+                // Note for the reviewer:
+                // This is a little bit of string concatenation
+                // however it should be fine to not use StringBuilder here
+                // because in the end there are only 7 strings and
+                // this part of code is not expected to be hit so often.
+                throw new Exception(
+                    "Cannot remove the desired quantity of: "
+                    + quantity
+                    + " Portions from the Batch with ID: "
+                    + batchId
+                    + " because only "
+                    + batch.AvailableQuantity
+                    + " are available"
+                    );
+            }
+            // Remove the element to be updated from the list
+            allBatches.Remove(batch);
+            // Change the available quantity in the batch
+            batch.AvailableQuantity -= quantity;
+            // Re-add it to the list
+            allBatches.Add(batch);
+            // Update the batches file
+            await WriteData(this.fileBatches, allBatches);
+            // Return the updated batch
+            return batch;
+        }
+
+        /// <summary>
+        /// Updates the Expiration date of a Batch.
+        /// </summary>
+        /// <param name="batchId">
+        /// ID of the Batch.
+        /// </param>
+        /// <param name="newExpirationDate">
+        /// New Expiration Date.
+        /// </param>
+        /// <returns>
+        /// A Task which resolves in a Batch instance with the updated data.
+        /// </returns>
+        public async Task<Batch> FixExpirationDate(Guid batchId, DateTime newExpirationDate)
+        {
+            // Get the list of all Batches
+            List<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+            // Get the Batch
+            Batch batch = await this.GetBatch(batchId, allBatches);
+            // Remove the batch
+            allBatches.Remove(batch);
+            // Update the batch
+            batch.Expiration = newExpirationDate;
+            // Re-add it to the list
+            allBatches.Add(batch);
+            // Update the batches file
+            await WriteData(this.fileBatches, allBatches);
+            // Return the updated batch
+            return batch;
+        }
+
+        #endregion IDataAccessService Implementation
+
+        /// <summary>
+        /// Gets the batch corresponding to the given ID.
+        /// Throws Exceptions if none or more than one are found.
+        /// </summary>
+        /// <param name="batchId">
+        /// ID of the Batch.
+        /// </param>
+        /// <param name="List">
+        /// List of the Batches that will be serached
+        /// </param>
+        /// <returns>
+        /// A Task which resolves into the Batch.
+        /// </returns>
+        private async Task<Batch> GetBatch(Guid batchId, List<Batch> batches)
+        {
             // Get the Batch with the correct ID
-            List<Batch> selectedBatches = allBatches.Where(
+            List<Batch> selectedBatches = batches.Where(
                 b => b.Id == batchId
                 ).ToList();
             int count = selectedBatches.Count<Batch>();
@@ -144,62 +246,9 @@ namespace FelFeltory.DataAccess
             }
             // There is exactly one Batch with the given ID.
             Batch batch = selectedBatches.First();
-            if (batch.AvailableQuantity < quantity)
-            {
-                // Note for the reviewer:
-                // This is a little bit of string concatenation
-                // however it should be fine to not use StringBuilder here
-                // because in the end there are only 7 strings and
-                // this part of code is not expected to be hit so often.
-                throw new Exception(
-                    "Cannot remove the desired quantity of: "
-                    + quantity
-                    + " Portions from the Batch with ID: "
-                    + batchId
-                    + " because only "
-                    + batch.AvailableQuantity
-                    + " are available"
-                    );
-            }
 
-            List<Batch> updatedList = allBatches.ToList();
-            // Remove the element to be updated from the list
-            updatedList.Remove(batch);
-            // Change the available quantity in the batch
-            batch.AvailableQuantity -= quantity;
-            // Re-add it to the list
-            updatedList.Add(batch);
-            // Update the batches file
-            await WriteData(this.fileBatches, updatedList);
-            // Return the updated batch
             return batch;
         }
-
-        /// <summary>
-        /// Gets the history of the given Batch.
-        /// </summary>
-        /// <param name="id">
-        /// ID identifying the batch.
-        /// </param>
-        /// <returns>
-        /// A Task which will resolve in to an IEnumerable of Batch Events.
-        /// </returns>
-        public async Task<IEnumerable<BatchEvent>> GetBatchHistory(Guid id)
-        {
-            // Get all Batches
-            IEnumerable<BatchEvent> allEvents =
-                await this.GetData<BatchEvent>(this.fileBatchEvents);
-            // Filter the batches by ID.
-            IEnumerable<BatchEvent> events = allEvents.Where(
-                e => e.BatchId == id
-                ).OrderBy(
-                    e => e.EventDate
-                );
-
-            return events;
-        }
-
-        #endregion IDataAccessService Implementation
 
         /// <summary>
         /// Get all data of given type from the given file.
@@ -207,14 +256,14 @@ namespace FelFeltory.DataAccess
         /// <typeparam name="T">Type of data to be read.</typeparam>
         /// <param name="fileName">File containing the data.</param>
         /// <returns></returns>
-        private async Task<IEnumerable<T>> GetData<T>(string fileName)
+        private async Task<List<T>> GetData<T>(string fileName)
         {
             using (StreamReader file = File.OpenText(fileName))
             using (JsonReader reader = new JsonTextReader(file))
             {
 
-                IEnumerable<T> allBatches =
-                    serializer.Deserialize<IEnumerable<T>>(reader);
+                List<T> allBatches =
+                    serializer.Deserialize<List<T>>(reader);
 
                 return allBatches;
             }

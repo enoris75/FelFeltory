@@ -67,8 +67,22 @@ namespace FelFeltory.DataAccess
         /// Quantity of Portions to remove.
         /// </param>
         /// <returns>
-        /// A Task which will resolve in a Batch instance containing the upadted Batch.
+        /// A Task which will resolve in a Batch instance with the updated data.
         /// </returns>
         Task<Batch> RemoveFromBatch(Guid batchId, int quantity);
+
+        /// <summary>
+        /// Updates the Expiration date of a Batch.
+        /// </summary>
+        /// <param name="batchId">
+        /// ID of the Batch.
+        /// </param>
+        /// <param name="newExpirationDate">
+        /// New Expiration Date.
+        /// </param>
+        /// <returns>
+        /// A Task which resolves in a Batch instance with the updated data.
+        /// </returns>
+        Task<Batch> FixExpirationDate(Guid batchId, DateTime newExpirationDate);
     }
 }
