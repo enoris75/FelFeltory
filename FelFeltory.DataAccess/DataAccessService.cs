@@ -40,6 +40,8 @@ namespace FelFeltory.DataAccess
         /// </summary>
         private readonly JsonSerializer serializer = JsonSerializer.CreateDefault();
 
+        #region IDataAccessService Implementation
+
         /// <summary>
         /// Get All Product Definitions.
         /// </summary>
@@ -50,17 +52,27 @@ namespace FelFeltory.DataAccess
         {
             return await this.GetData<Product>(this.fileProducts);
         }
+
         /// <summary>
-        /// Gets all Batches in the Inventory which still have available
-        /// Portions.
+        /// Gets all Batches in the Inventory which still have available Portions.
         /// </summary>
-        /// <param name="freshness">
-        /// Freshness of the Batch. If the parameter is not passed then all Batches are returned.
-        /// </param>
         /// <returns>
         /// A Task which will resolve into an IEnumerable of Products.
-        /// </returns
-        public async Task<IEnumerable<Batch>> GetBatches(Freshness? freshness)
+        /// </returns>
+        public async Task<IEnumerable<Batch>> GetAllBatches()
+        {
+            return await this.GetData<Batch>(this.fileBatches);
+        }
+
+        /// <summary>
+        /// Get all Batches in the Inventory which still have available portions and
+        /// have the given Freshness.
+        /// </summary>
+        /// <param name="freshness">Freshness of the batches.</param>
+        /// <returns>
+        /// A Task which will resolve into an IEnumerable of Products.
+        /// </returns>
+        public async Task<IEnumerable<Batch>> GetBatches(Freshness freshness)
         {
             IEnumerable<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
 
@@ -68,6 +80,28 @@ namespace FelFeltory.DataAccess
                 b => b.Freshness == freshness
                 );
             return batches;
+        }
+
+        /// <summary>
+        /// Adds a new Batch to the inventory based on the passed parameters.
+        /// </summary>
+        /// <param name="productId">ID of the Product the Batch is made of.</param>
+        /// <param name="batchSize">Number of Portions in the Batch.</param>
+        /// <param name="expirationDate">Expiration Date of the Batch.</param>
+        /// <returns>
+        /// A Task which will resolve in a Batch instance containing the newly added Batch.
+        /// </returns>
+        public async Task<Batch> AddBatch(Guid productId, int batchSize, DateTime expirationDate)
+        {
+            // Get all Batches
+            IEnumerable<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+            // Add the new Batch to the list
+            Batch newBatch = Batch.GetInstance(productId, batchSize, expirationDate);
+            allBatches.Append(newBatch);
+            // Write the list into a File
+            await WriteData<IEnumerable<Batch>>(this.fileBatches, allBatches);
+
+            return newBatch;
         }
 
         /// <summary>
@@ -94,6 +128,8 @@ namespace FelFeltory.DataAccess
             return events;
         }
 
+        #endregion IDataAccessService Implementation
+
         /// <summary>
         /// Get all data of given type from the given file.
         /// </summary>
@@ -110,6 +146,23 @@ namespace FelFeltory.DataAccess
                     serializer.Deserialize<IEnumerable<T>>(reader);
 
                 return allBatches;
+            }
+        }
+
+        /// <summary>
+        /// Serialize and write the given data to the given file.
+        /// </summary>
+        /// <typeparam name="T">Type of the data to be serialized.</typeparam>
+        /// <param name="fileName">File the data will be written to.</param>
+        /// <param name="data">Data to be written</param>
+        /// <returns>
+        /// A Task which resolves when the operation is complete.
+        /// </returns>
+        private async Task WriteData<T>(string fileName, T data)
+        {
+            using (StreamWriter file = File.CreateText(fileName))
+            {
+                serializer.Serialize(file, data);
             }
         }
     }

@@ -61,5 +61,47 @@ namespace FelFeltory.Models
                 }
             }
         }
+
+        /// <summary>
+        /// Return an instance of Batch based on the passed parameters
+        /// </summary>
+        /// <param name="productId">ID of the Product the Batch is made of.</param>
+        /// <param name="batchSize">Number of Portions in the Batch.</param>
+        /// <param name="expirationDate">Expiration Date of the Batch.</param>
+        /// <returns>
+        /// A new Instance of Batch.
+        /// </returns>
+        public static Batch GetInstance(
+            Guid productId,
+            int batchSize,
+            DateTime expirationDate
+            )
+        {
+            Batch b = new Batch();
+            // Create the new Guid Randomly
+            b.Id = Guid.NewGuid();
+            b.ProductId = productId;
+            b.BatchSize = batchSize;
+            b.AvailableQuantity = batchSize;
+            b.Expiration = expirationDate;
+            return b;
+        }
+
+        /// <summary>
+        /// Return an instance of Batch based on the passed parameters.
+        /// Defines the expiration date/time as in 7 days from now
+        /// </summary>
+        /// <param name="productId">ID of the Product the Batch is made of.</param>
+        /// <param name="batchSize">Number of Portions in the Batch.</param>
+        /// <returns>
+        /// A new Instance of Batch.
+        /// </returns>
+        public static Batch GetInstance(
+            Guid productId,
+            int batchSize
+            )
+        {
+            return GetInstance(productId, batchSize, DateTime.UtcNow.AddDays(7));
+        }
     }
 }

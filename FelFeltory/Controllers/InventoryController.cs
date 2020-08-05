@@ -46,15 +46,8 @@ namespace FelFeltory.Controllers
         [Route("AllBatches")]
         public async Task<ActionResult<IEnumerable<Batch>>> GetAllBatches()
         {
-            IEnumerable<Product> products = await this.AccessService.GetAllProducts();
-
-            List<Batch> batchList = new List<Batch>();
-            Batch b1 = new Batch();
-            b1.Expiration = new DateTime();
-            b1.ProductId = new Guid();
-            b1.AvailableQuantity = 999;
-            b1.BatchSize = 1000;
-            batchList.Add(b1);
+            IEnumerable<Batch> batchList =
+                await this.AccessService.GetAllBatches();
 
             return Ok(batchList);
         }
@@ -105,7 +98,12 @@ namespace FelFeltory.Controllers
             [FromBody] AddBatchRequestBody requestBody
             )
         {
-            return Ok("Not implemented yet");
+            Batch newBatch = await this.AccessService.AddBatch(
+                requestBody.ProductId,
+                requestBody.BatchSize,
+                requestBody.ExpirationDate
+                );
+            return Ok(newBatch);
         }
 
         /// <summary>
