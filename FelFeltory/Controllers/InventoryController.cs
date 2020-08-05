@@ -46,16 +46,8 @@ namespace FelFeltory.Controllers
         [Route("AllBatches")]
         public async Task<ActionResult<IEnumerable<Batch>>> GetAllBatches()
         {
-            IEnumerable<Product> products = await this.AccessService.GetAllProducts();
-
-            List<Batch> batchList = new List<Batch>();
-            Batch b1 = new Batch();
-            b1.Expiration = new DateTime();
-            b1.ProductId = new Guid();
-            b1.ProductDescription = "Lorem Ipsum dolor";
-            b1.AvailableQuantity = 999;
-            b1.BatchSize = 1000;
-            batchList.Add(b1);
+            IEnumerable<Batch> batchList =
+                await this.AccessService.GetAllBatches();
 
             return Ok(batchList);
         }
@@ -66,24 +58,29 @@ namespace FelFeltory.Controllers
         /// <param name="freshness">Freshness of the Batch (e.g. Fresh, Expiring, Expired)</param>
         /// <returns>An IEnumerable of Batches having the requested Freshness.</returns>
         [HttpGet]
-        [Route("BatchesByFreshness")]
+        [Route("BatchesByFreshness/{freshness}")]
         public async Task<ActionResult<IEnumerable<Batch>>> GetBatchesByFreshness([FromRoute] Freshness freshness)
         {
-            return Ok("Not implemented yet");
+            IEnumerable<Batch> batches =
+                await this.AccessService.GetBatches(freshness);
+
+            return Ok(batches);
         }
 
         /// <summary>
         /// Retrieve the history of the given Batch
         /// </summary>
-        /// <param name="id">ID of the Batch</param>
+        /// <param name="batchId">ID of the Batch</param>
         /// <returns>An IEnumerable of Events related to the given Batch history.</returns>
         [HttpGet]
-        [Route("BatchHistory")]
+        [Route("BatchHistory/{batchId}/")]
         public async Task<ActionResult<IEnumerable<BatchEvent>>> GetBatchHistory(
-            [FromRoute] Guid id
+            [FromRoute] Guid batchId
             )
         {
-            return Ok("Not implemented yet");
+            IEnumerable<BatchEvent> events =
+                await this.AccessService.GetBatchHistory(batchId);
+            return Ok(events);
         }
 
         /// <summary>
@@ -101,7 +98,12 @@ namespace FelFeltory.Controllers
             [FromBody] AddBatchRequestBody requestBody
             )
         {
-            return Ok("Not implemented yet");
+            Batch newBatch = await this.AccessService.AddBatch(
+                requestBody.ProductId,
+                requestBody.BatchSize,
+                requestBody.ExpirationDate
+                );
+            return Ok(newBatch);
         }
 
         /// <summary>
@@ -113,13 +115,25 @@ namespace FelFeltory.Controllers
         /// A Task which results in an IActionResult describing the outcome of the operation.
         /// </returns>
         [HttpPost]
-        [Route("RemoveFromBatch")]
+        [Route("RemoveFromBatch/{batchId}/{quantity}/")]
         public async Task<IActionResult> RemoveFromBatch(
-            [FromRoute] Guid id,
-            [FromBody] int quantity
+            [FromRoute] Guid batchId,
+            [FromRoute] int quantity
             )
         {
-            return Ok("Not implemented yet");
+            if (quantity < 0)
+            {
+                return BadRequest(new
+                {
+                    error = "invalid quantity",
+                    description = "the quantity cannot be negative"
+                });
+            }
+
+            Batch updatedBatch =
+                await this.AccessService.RemoveFromBatch(batchId, quantity);
+
+            return Ok(updatedBatch);
         }
 
         /// <summary>
@@ -129,13 +143,18 @@ namespace FelFeltory.Controllers
         /// <param name="newExpirationDate">New Expiration Date</param>
         /// <returns></returns>
         [HttpPatch]
-        [Route("FixExpirationDate")]
+        [Route("FixExpirationDate/{batchId}/{newExpirationDate}/")]
         public async Task<IActionResult> FixExpirationDate(
-            [FromRoute] Guid id,
-            [FromBody] DateTime newExpirationDate
+            [FromRoute] Guid batchId,
+            [FromRoute] DateTime newExpirationDate
             )
         {
-            return Ok("Not implemented yet");
+            Batch batch = await this.AccessService.FixExpirationDate(
+                    batchId,
+                    newExpirationDate
+                );
+
+            return Ok(batch);
         }
     }
 }
