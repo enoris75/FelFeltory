@@ -97,11 +97,76 @@ namespace FelFeltory.DataAccess
             IEnumerable<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
             // Add the new Batch to the list
             Batch newBatch = Batch.GetInstance(productId, batchSize, expirationDate);
-            allBatches.Append(newBatch);
+            List<Batch> updatedList = allBatches.ToList();
+            updatedList.Add(newBatch);
             // Write the list into a File
-            await WriteData<IEnumerable<Batch>>(this.fileBatches, allBatches);
+            await WriteData(this.fileBatches, updatedList);
 
             return newBatch;
+        }
+
+        /// <summary>
+        /// Removes the given quantity of Portions from the Batch available stock.
+        /// </summary>
+        /// <param name="batchId">
+        /// ID of the Batch the Portions are removed from.
+        /// </param>
+        /// <param name="quantity">
+        /// Quantity of Portions to remove.
+        /// </param>
+        /// <returns>
+        /// A Task which will resolve in a Batch instance containing the upadted Batch.
+        /// </returns>
+        public async Task<Batch> RemoveFromBatch(Guid batchId, int quantity)
+        {
+            // Get all Batches
+            IEnumerable<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+            // Get the Batch with the correct ID
+            IEnumerable<Batch> selectedBatches = allBatches.Where(
+                b => b.Id == batchId
+                );
+            int count = selectedBatches.Count<Batch>();
+            // Note there should be exactly one batch with the given ID
+            if (count == 0)
+            {
+                throw new Exception(
+                    "The Batch with the ID: "
+                    + batchId.ToString()
+                    + " couldn't be found");
+            }
+            else if (count > 1)
+            {
+                throw new Exception(
+                    "Corrupted data: there are multiple ("
+                    + count
+                    + ") instances of Batches with ID: "
+                    + batchId.ToString());
+            }
+            // There is exactly one Batch with the given ID.
+            Batch batch = selectedBatches.First();
+            if (batch.AvailableQuantity < quantity)
+            {
+                // Note for the reviewer:
+                // This is a little bit of string concatenation
+                // however it should be fine to not use StringBuilder here
+                // because in the end there are only 7 strings and
+                // this part of code is not expected to be hit so often.
+                throw new Exception(
+                    "Cannot remove the desired quantity of: "
+                    + quantity
+                    + " Portions from the Batch with ID: "
+                    + batchId
+                    + " because only "
+                    + batch.AvailableQuantity
+                    + " are available"
+                    );
+            }
+            // Change the available quantity in the batch
+            batch.AvailableQuantity -= quantity;
+
+            await WriteData(this.fileBatches, allBatches);
+
+            return batch;
         }
 
         /// <summary>
