@@ -1,0 +1,44 @@
+[
+    {
+        "batchId": "44e5b691-83c6-4505-a273-37101d917ed6",
+        "date": "2020-08-01T00:00:00Z",
+        "type": "Added",
+        "quantity": 1000,
+        "freshness": "Fresh"
+    },
+    {
+        "batchId": "44e5b691-83c6-4505-a273-37101d917ed6",
+        "date": "2020-08-02T00:00:00Z",
+        "type": "PortionsRemoved",
+        "quantity": 200,
+        "freshness": "Fresh"
+    },
+    {
+        "batchId": "44e5b691-83c6-4505-a273-37101d917ed6",
+        "date": "2020-08-03T00:00:00Z",
+        "type": "PortionsRemoved",
+        "quantity": 60,
+        "freshness": "Fresh"
+    },
+    {
+        "batchId": "17c861ef-4e3d-45db-9465-caa06586da0d",
+        "date": "2020-08-02T00:00:00Z",
+        "type": "Added",
+        "quantity": 1000,
+        "freshness": "Fresh"
+    },
+    {
+        "batchId": "d0998ba9-bd2e-4849-bf70-fcc61b759ee4",
+        "date": "2020-08-01T00:00:00Z",
+        "type": "Added",
+        "quantity": 600,
+        "freshness": "Fresh"
+    },
+    {
+        "batchId": "d0998ba9-bd2e-4849-bf70-fcc61b759ee4",
+        "date": "2020-08-04T00:00:00Z",
+        "type": "PortionsRemoved",
+        "quantity": 499,
+        "freshness": "Fresh"
+    }
+]

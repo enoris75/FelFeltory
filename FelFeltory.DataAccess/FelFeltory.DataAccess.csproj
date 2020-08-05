@@ -9,6 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\batchEvents.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Data\batches.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

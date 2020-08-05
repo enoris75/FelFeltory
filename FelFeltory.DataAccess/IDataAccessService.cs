@@ -25,5 +25,16 @@ namespace FelFeltory.DataAccess
         /// A Task which will resolve into an IEnumerable of Products.
         /// </returns>
         Task<IEnumerable<Batch>> GetBatches(Freshness? freshness);
+
+        /// <summary>
+        /// Gets the history of the given Batch.
+        /// </summary>
+        /// <param name="id">
+        /// ID identifying the batch.
+        /// </param>
+        /// <returns>
+        /// A Task which will resolve in to an IEnumerable of Batch Events.
+        /// </returns>
+        Task<IEnumerable<BatchEvent>> GetBatchHistory(Guid id);
     }
 }

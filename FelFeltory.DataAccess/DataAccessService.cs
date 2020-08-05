@@ -22,6 +22,18 @@ namespace FelFeltory.DataAccess
         // ADDITIONAL NOTE for the reviewer: the way this file is accessed would per se cries to
         // Heaven for Vengeance, weren't this just a way to pull some mock data from
         // an external file written in the hiddenness of my COVID dungeon.
+        /// <summary>
+        /// File which stores the Products.
+        /// </summary>
+        private readonly string fileProducts = @"..\FelFeltory.DataAccess\Data\products.json";
+        /// <summary>
+        /// File which stores the Batches.
+        /// </summary>
+        private readonly string fileBatches = @"..\FelFeltory.DataAccess\Data\batches.json";
+        /// <summary>
+        /// File which stores the BatchEvents.
+        /// </summary>
+        private readonly string fileBatchEvents = @"..\FelFeltory.DataAccess\Data\batchEvents.json";
 
         /// <summary>
         /// The JsonSerializer to use for JSON serialization and de-serialization.
@@ -36,14 +48,7 @@ namespace FelFeltory.DataAccess
         /// </returns>
         public async Task<IEnumerable<Product>> GetAllProducts()
         {
-            using (StreamReader file = File.OpenText(@"..\FelFeltory.DataAccess\Data\products.json"))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                IEnumerable<Product> products =
-                    (IEnumerable<Product>)serializer.Deserialize(file, typeof(IEnumerable<Product>));
-
-                return products;
-            }
+            return await this.GetData<Product>(this.fileProducts);
         }
         /// <summary>
         /// Gets all Batches in the Inventory which still have available
@@ -57,21 +62,54 @@ namespace FelFeltory.DataAccess
         /// </returns
         public async Task<IEnumerable<Batch>> GetBatches(Freshness? freshness)
         {
-            using (StreamReader file = File.OpenText(@"..\FelFeltory.DataAccess\Data\batches.json"))
+            IEnumerable<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+
+            IEnumerable<Batch> batches = allBatches.Where(
+                b => b.Freshness == freshness
+                );
+            return batches;
+        }
+
+        /// <summary>
+        /// Gets the history of the given Batch.
+        /// </summary>
+        /// <param name="id">
+        /// ID identifying the batch.
+        /// </param>
+        /// <returns>
+        /// A Task which will resolve in to an IEnumerable of Batch Events.
+        /// </returns>
+        public async Task<IEnumerable<BatchEvent>> GetBatchHistory(Guid id)
+        {
+            // Get all Batches
+            IEnumerable<BatchEvent> allEvents =
+                await this.GetData<BatchEvent>(this.fileBatchEvents);
+            // Filter the batches by ID.
+            IEnumerable<BatchEvent> events = allEvents.Where(
+                e => e.BatchId == id
+                ).OrderBy(
+                    e => e.EventDate
+                );
+
+            return events;
+        }
+
+        /// <summary>
+        /// Get all data of given type from the given file.
+        /// </summary>
+        /// <typeparam name="T">Type of data to be read.</typeparam>
+        /// <param name="fileName">File containing the data.</param>
+        /// <returns></returns>
+        private async Task<IEnumerable<T>> GetData<T>(string fileName)
+        {
+            using (StreamReader file = File.OpenText(fileName))
             using (JsonReader reader = new JsonTextReader(file))
             {
 
-                IEnumerable<Batch> allBatches = serializer.Deserialize<IEnumerable<Batch>>(reader);
+                IEnumerable<T> allBatches =
+                    serializer.Deserialize<IEnumerable<T>>(reader);
 
-                if (freshness == null)
-                {
-                    return allBatches;
-                }
-
-                IEnumerable<Batch> batches = allBatches.Where(
-                    b => b.Freshness == freshness
-                    );
-                return batches;
+                return allBatches;
             }
         }
     }

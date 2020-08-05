@@ -77,15 +77,17 @@ namespace FelFeltory.Controllers
         /// <summary>
         /// Retrieve the history of the given Batch
         /// </summary>
-        /// <param name="id">ID of the Batch</param>
+        /// <param name="batchId">ID of the Batch</param>
         /// <returns>An IEnumerable of Events related to the given Batch history.</returns>
         [HttpGet]
-        [Route("BatchHistory")]
+        [Route("BatchHistory/{batchId}/")]
         public async Task<ActionResult<IEnumerable<BatchEvent>>> GetBatchHistory(
-            [FromRoute] Guid id
+            [FromRoute] Guid batchId
             )
         {
-            return Ok("Not implemented yet");
+            IEnumerable<BatchEvent> events =
+                await this.AccessService.GetBatchHistory(batchId);
+            return Ok(events);
         }
 
         /// <summary>
