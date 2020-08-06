@@ -21,6 +21,8 @@ namespace FelFeltory.UnitTest
 
         private readonly Batch testBatch1;
         private readonly List<Batch> batchList;
+        private readonly BatchEvent testEvent1;
+        private readonly List<BatchEvent> eventList;
 
         public InventoryControllerTest()
         {
@@ -35,6 +37,10 @@ namespace FelFeltory.UnitTest
             testBatch1 = Batch.GetInstance(Guid.NewGuid(), 1000);
             batchList = new List<Batch>();
             batchList.Add(testBatch1);
+
+            testEvent1 = BatchEvent.GetInstance(testBatch1, BatchEventType.Added);
+            eventList = new List<BatchEvent>();
+            eventList.Add(testEvent1);
         }
 
         [Fact]
@@ -66,6 +72,19 @@ namespace FelFeltory.UnitTest
         }
 
         [Fact]
+        public async void VerifyGetBatchHistory()
+        {
+            Guid batchId = testBatch1.Id;
+            mockAccessService.Setup(a => a.GetBatchHistory(batchId))
+                .ReturnsAsync(eventList);
+
+            ActionResult actionResult = await this.controller.GetBatchHistory(batchId);
+            OkObjectResult objResult = Assert.IsType<OkObjectResult>(actionResult);
+            Assert.Equal(200, objResult.StatusCode);
+            mockAccessService.Verify(a => a.GetBatchHistory(batchId), Times.Once);
+        }
+
+        [Fact]
         public async void VerifyAddBatch()
         {
             AddBatchRequestBody request = new AddBatchRequestBody();
@@ -89,6 +108,76 @@ namespace FelFeltory.UnitTest
                     request.BatchSize,
                     request.ExpirationDate
                 ), Times.Once);
+        }
+
+        [Fact]
+        public async void VerifyRemoveFromBatchWorks()
+        {
+            Guid batchId = testBatch1.Id;
+            mockAccessService.Setup(
+                a => a.RemoveFromBatch(
+                    It.IsAny<Guid>(),
+                    It.IsAny<int>()
+                    )
+                )
+                .ReturnsAsync(testBatch1);
+
+            ActionResult actionResult =
+                await this.controller.RemoveFromBatch(batchId, 10);
+            OkObjectResult objResult = Assert.IsType<OkObjectResult>(actionResult);
+            Assert.Equal(200, objResult.StatusCode);
+            mockAccessService.Verify(
+                a => a.RemoveFromBatch(
+                    It.IsAny<Guid>(),
+                    It.IsAny<int>()
+                    )
+                , Times.Once
+            );
+        }
+
+        [Fact]
+        public async void VerifyRemoveFromBatchNegativeQuantity()
+        {
+            Guid batchId = testBatch1.Id;
+            mockAccessService.Setup(
+                a => a.RemoveFromBatch(
+                    It.IsAny<Guid>(),
+                    It.IsAny<int>()
+                    )
+                )
+                .ReturnsAsync(testBatch1);
+
+            ActionResult actionResult =
+                await this.controller.RemoveFromBatch(batchId, -10);
+            BadRequestObjectResult objResult =
+                Assert.IsType<BadRequestObjectResult>(actionResult);
+            Assert.Equal(400, objResult.StatusCode);
+            mockAccessService.Verify(
+                a => a.RemoveFromBatch(
+                    It.IsAny<Guid>(),
+                    It.IsAny<int>()
+                    )
+                , Times.Never
+            );
+        }
+
+        [Fact]
+        public async void VerifyFixExpirationDate()
+        {
+            Guid batchId = testBatch1.Id;
+            DateTime newExpirationDate = DateTime.UtcNow;
+
+            mockAccessService.Setup(
+                a => a.FixExpirationDate(batchId, newExpirationDate))
+                .ReturnsAsync(testBatch1);
+
+            ActionResult actionResult =
+                await this.controller.FixExpirationDate(batchId, newExpirationDate);
+            OkObjectResult objResult = Assert.IsType<OkObjectResult>(actionResult);
+            Assert.Equal(200, objResult.StatusCode);
+            mockAccessService.Verify(
+                a => a.FixExpirationDate(batchId, newExpirationDate),
+                Times.Once);
         }
     }
 }

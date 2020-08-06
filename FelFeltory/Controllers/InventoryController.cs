@@ -74,7 +74,7 @@ namespace FelFeltory.Controllers
         /// <returns>An IEnumerable of Events related to the given Batch history.</returns>
         [HttpGet]
         [Route("BatchHistory/{batchId}/")]
-        public async Task<ActionResult<IEnumerable<BatchEvent>>> GetBatchHistory(
+        public async Task<ActionResult> GetBatchHistory(
             [FromRoute] Guid batchId
             )
         {
@@ -116,7 +116,7 @@ namespace FelFeltory.Controllers
         /// </returns>
         [HttpPost]
         [Route("RemoveFromBatch/{batchId}/{quantity}/")]
-        public async Task<IActionResult> RemoveFromBatch(
+        public async Task<ActionResult> RemoveFromBatch(
             [FromRoute] Guid batchId,
             [FromRoute] int quantity
             )
@@ -144,7 +144,7 @@ namespace FelFeltory.Controllers
         /// <returns></returns>
         [HttpPatch]
         [Route("FixExpirationDate/{batchId}/{newExpirationDate}/")]
-        public async Task<IActionResult> FixExpirationDate(
+        public async Task<ActionResult> FixExpirationDate(
             [FromRoute] Guid batchId,
             [FromRoute] DateTime newExpirationDate
             )
