@@ -207,6 +207,40 @@ namespace FelFeltory.DataAccess
         }
 
         /// <summary>
+        /// Updates the Batch size and available quantity.
+        /// </summary>
+        /// <param name="batchId">
+        /// ID of the Batch.
+        /// </param>
+        /// <param name="newBatchSize">
+        /// Updated size of the Batch.
+        /// </param>
+        /// <param name="newAvailableQuantity">
+        /// Updated available quantity (number of Portions) of the Batch.
+        /// </param>
+        /// <returns>
+        /// A Task which resolves in a Batch instance with the updated data.
+        /// </returns>
+        public async Task<Batch> FixQuantities(Guid batchId, int newBatchSize, int newAvailableQuantity)
+        {
+            // Get the list of all Batches
+            List<Batch> allBatches = await DataHandler.GetData<Batch>(DataSource.Batches);
+            // Get the Batch
+            Batch batch = this.GetBatch(batchId, allBatches);
+            // Remove the batch
+            allBatches.Remove(batch);
+            // Update the batch
+            batch.BatchSize = newBatchSize;
+            batch.AvailableQuantity = newAvailableQuantity;
+            // Re-add it to the list
+            allBatches.Add(batch);
+            // Update the batches file
+            await DataHandler.WriteData(DataSource.Batches, allBatches);
+            // Return the updated batch
+            return batch;
+        }
+
+        /// <summary>
         /// Get the overview of the inventory broke down by the Freshness of the Batches/Portions.
         /// </summary>
         /// <returns>

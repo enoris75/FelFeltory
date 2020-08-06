@@ -192,5 +192,25 @@ namespace FelFeltory.UnitTest
                 a => a.FixExpirationDate(batchId, newExpirationDate),
                 Times.Once);
         }
+
+        [Fact]
+        public async void VerifyFixQuantities()
+        {
+            Guid batchId = testBatch1.Id;
+            int newSize = 1444;
+            int newAvailableQuantity = 1111;
+
+            mockAccessService.Setup(
+                a => a.FixQuantities(batchId, newSize, newAvailableQuantity))
+                .ReturnsAsync(testBatch1);
+
+            ActionResult actionResult =
+                await this.controller.FixQuantities(batchId, newSize, newAvailableQuantity);
+            OkObjectResult objResult = Assert.IsType<OkObjectResult>(actionResult);
+            Assert.Equal(200, objResult.StatusCode);
+            mockAccessService.Verify(
+                a => a.FixQuantities(batchId, newSize, newAvailableQuantity),
+                Times.Once);
+        }
     }
 }
