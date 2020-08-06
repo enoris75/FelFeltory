@@ -13,32 +13,14 @@ namespace FelFeltory.DataAccess
     /// </summary>
     public class DataAccessService : IDataAccessService
     {
-        // Note for the reviewer: Method in this class are declared as async even if their implementation
-        // at this stage does not requires it (for the data is read from local files).
-        // The reason for this is that if we would proceed to an actual implementation
-        // of this service, with the data coming from a remote service (or DB) the calls
-        // to do so, would most probably be asynchronous.
-
-        // ADDITIONAL NOTE for the reviewer: the way this file is accessed would per se cries to
-        // Heaven for Vengeance, weren't this just a way to pull some mock data from
-        // an external file written in the hiddenness of my COVID dungeon.
         /// <summary>
-        /// File which stores the Products.
+        /// Instance of Data Handler used to read and write data.
+        /// NOTE for the reviewer: for the purpose of this exercise is OK to have it as a private member of
+        /// the DataAccessService. In a real case we might want to have this injected so,
+        /// that (e.g.) testing with different data sources and different data sources type
+        /// is made easier.
         /// </summary>
-        private readonly string fileProducts = @"..\FelFeltory.DataAccess\Data\products.json";
-        /// <summary>
-        /// File which stores the Batches.
-        /// </summary>
-        private readonly string fileBatches = @"..\FelFeltory.DataAccess\Data\batches.json";
-        /// <summary>
-        /// File which stores the BatchEvents.
-        /// </summary>
-        private readonly string fileBatchEvents = @"..\FelFeltory.DataAccess\Data\batchEvents.json";
-
-        /// <summary>
-        /// The JsonSerializer to use for JSON serialization and de-serialization.
-        /// </summary>
-        private readonly JsonSerializer serializer = JsonSerializer.CreateDefault();
+        private readonly DataHandler dataHandler = new DataHandler();
 
         #region IDataAccessService Implementation
 
@@ -50,7 +32,7 @@ namespace FelFeltory.DataAccess
         /// </returns>
         public async Task<IEnumerable<Product>> GetAllProducts()
         {
-            return await this.GetData<Product>(this.fileProducts);
+            return await dataHandler.GetData<Product>(DataSource.Products);
         }
 
         /// <summary>
@@ -61,7 +43,7 @@ namespace FelFeltory.DataAccess
         /// </returns>
         public async Task<IEnumerable<Batch>> GetAllBatches()
         {
-            return await this.GetData<Batch>(this.fileBatches);
+            return await dataHandler.GetData<Batch>(DataSource.Batches);
         }
 
         /// <summary>
@@ -74,7 +56,7 @@ namespace FelFeltory.DataAccess
         /// </returns>
         public async Task<IEnumerable<Batch>> GetBatches(Freshness freshness)
         {
-            IEnumerable<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+            IEnumerable<Batch> allBatches = await dataHandler.GetData<Batch>(DataSource.Batches);
 
             IEnumerable<Batch> batches = allBatches.Where(
                 b => b.Freshness == freshness
@@ -95,7 +77,7 @@ namespace FelFeltory.DataAccess
         {
             // Get all Batches
             List<BatchEvent> allEvents =
-                await this.GetData<BatchEvent>(this.fileBatchEvents);
+                await dataHandler.GetData<BatchEvent>(DataSource.BatchEvents);
             // Filter the batches by ID.
             List<BatchEvent> events = allEvents.Where(
                 e => e.BatchId == id
@@ -118,13 +100,13 @@ namespace FelFeltory.DataAccess
         public async Task<Batch> AddBatch(Guid productId, int batchSize, DateTime expirationDate)
         {
             // Get all Batches
-            List<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+            List<Batch> allBatches = await dataHandler.GetData<Batch>(DataSource.Batches);
             // Create the new Batch
             Batch newBatch = Batch.GetInstance(productId, batchSize, expirationDate);
             // Add the new Batch to the list
             allBatches.Add(newBatch);
             // Write the list into a File
-            await WriteData(this.fileBatches, allBatches);
+            await dataHandler.WriteData(DataSource.Batches, allBatches);
             // Create an event corresponding to this action
             BatchEvent e = BatchEvent.GetInstance(newBatch, BatchEventType.Added);
             // Add the event to the history
@@ -148,7 +130,7 @@ namespace FelFeltory.DataAccess
         public async Task<Batch> RemoveFromBatch(Guid batchId, int quantity)
         {
             // Get the list of all Batches
-            List<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+            List<Batch> allBatches = await dataHandler.GetData<Batch>(DataSource.Batches);
             // Get the Batch
             Batch batch = this.GetBatch(batchId, allBatches);
             if (batch.AvailableQuantity < quantity)
@@ -175,7 +157,7 @@ namespace FelFeltory.DataAccess
             // Re-add it to the list
             allBatches.Add(batch);
             // Update the batches file
-            await WriteData(this.fileBatches, allBatches);
+            await dataHandler.WriteData(DataSource.Batches, allBatches);
             // Create an event corresponding to this action
             BatchEvent e;
             if (batch.AvailableQuantity > 0)
@@ -208,7 +190,7 @@ namespace FelFeltory.DataAccess
         public async Task<Batch> FixExpirationDate(Guid batchId, DateTime newExpirationDate)
         {
             // Get the list of all Batches
-            List<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
+            List<Batch> allBatches = await dataHandler.GetData<Batch>(DataSource.Batches);
             // Get the Batch
             Batch batch = this.GetBatch(batchId, allBatches);
             // Remove the batch
@@ -218,7 +200,7 @@ namespace FelFeltory.DataAccess
             // Re-add it to the list
             allBatches.Add(batch);
             // Update the batches file
-            await WriteData(this.fileBatches, allBatches);
+            await dataHandler.WriteData(DataSource.Batches, allBatches);
             // Return the updated batch
             return batch;
         }
@@ -281,49 +263,11 @@ namespace FelFeltory.DataAccess
         {
             // Get all Batches
             List<BatchEvent> allEvents =
-                await this.GetData<BatchEvent>(this.fileBatchEvents);
+                await dataHandler.GetData<BatchEvent>(DataSource.BatchEvents);
             // Add the new event
             allEvents.Add(e);
             // Write the list of events
-            await WriteData(this.fileBatchEvents, allEvents);
-        }
-
-        /// <summary>
-        /// Get all data of given type from the given file.
-        /// </summary>
-        /// <typeparam name="T">Type of data to be read.</typeparam>
-        /// <param name="fileName">File containing the data.</param>
-        /// <returns>
-        /// A Task which results in the List containing the requested data.
-        /// </returns>
-        private async Task<List<T>> GetData<T>(string fileName)
-        {
-            using (StreamReader file = File.OpenText(fileName))
-            using (JsonReader reader = new JsonTextReader(file))
-            {
-
-                List<T> allBatches =
-                    serializer.Deserialize<List<T>>(reader);
-
-                return allBatches;
-            }
-        }
-
-        /// <summary>
-        /// Serialize and write the given data to the given file.
-        /// </summary>
-        /// <typeparam name="T">Type of the data to be serialized.</typeparam>
-        /// <param name="fileName">File the data will be written to.</param>
-        /// <param name="data">Data to be written</param>
-        /// <returns>
-        /// A Task which resolves when the operation is complete.
-        /// </returns>
-        private async Task WriteData<T>(string fileName, T data)
-        {
-            using (StreamWriter file = File.CreateText(fileName))
-            {
-                serializer.Serialize(file, data);
-            }
+            await dataHandler.WriteData(DataSource.BatchEvents, allEvents);
         }
         #endregion
     }
