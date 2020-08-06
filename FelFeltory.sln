@@ -7,10 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FelFeltory", "FelFeltory\Fe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FelFeltory.DataAccess", "FelFeltory.DataAccess\FelFeltory.DataAccess.csproj", "{42C6B351-4BCD-4DD3-B96D-D0D7FB440674}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FelFeltory.Models", "FelFeltory.Models\FelFeltory.Models.csproj", "{580569B8-C394-4A57-A33A-4233DF6D3921}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FelFeltory.UnitTest", "FelFeltory.UnitTest\FelFeltory.UnitTest.csproj", "{905C27A3-A414-41E7-A763-21A1722E1830}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FelFeltory.DataModels", "FelFeltory.DataModels\FelFeltory.DataModels.csproj", "{E4F2BEC9-971B-454F-A36D-8A4302583014}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FelFeltory.Tests", "FelFeltory.Tests\FelFeltory.Tests.csproj", "{4B53D3B0-ACBE-4E86-BEBE-E4E68E418D3C}"
@@ -29,14 +25,6 @@ Global
 		{42C6B351-4BCD-4DD3-B96D-D0D7FB440674}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42C6B351-4BCD-4DD3-B96D-D0D7FB440674}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42C6B351-4BCD-4DD3-B96D-D0D7FB440674}.Release|Any CPU.Build.0 = Release|Any CPU
-		{580569B8-C394-4A57-A33A-4233DF6D3921}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{580569B8-C394-4A57-A33A-4233DF6D3921}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{580569B8-C394-4A57-A33A-4233DF6D3921}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{580569B8-C394-4A57-A33A-4233DF6D3921}.Release|Any CPU.Build.0 = Release|Any CPU
-		{905C27A3-A414-41E7-A763-21A1722E1830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{905C27A3-A414-41E7-A763-21A1722E1830}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{905C27A3-A414-41E7-A763-21A1722E1830}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{905C27A3-A414-41E7-A763-21A1722E1830}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E4F2BEC9-971B-454F-A36D-8A4302583014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E4F2BEC9-971B-454F-A36D-8A4302583014}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4F2BEC9-971B-454F-A36D-8A4302583014}.Release|Any CPU.ActiveCfg = Release|Any CPU

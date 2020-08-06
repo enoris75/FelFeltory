@@ -44,7 +44,7 @@ namespace FelFeltory.Controllers
         /// </returns>
         [HttpGet]
         [Route("AllBatches")]
-        public async Task<ActionResult<IEnumerable<Batch>>> GetAllBatches()
+        public async Task<ActionResult> GetAllBatches()
         {
             IEnumerable<Batch> batchList =
                 await this.AccessService.GetAllBatches();
@@ -59,7 +59,7 @@ namespace FelFeltory.Controllers
         /// <returns>An IEnumerable of Batches having the requested Freshness.</returns>
         [HttpGet]
         [Route("BatchesByFreshness/{freshness}")]
-        public async Task<ActionResult<IEnumerable<Batch>>> GetBatchesByFreshness([FromRoute] Freshness freshness)
+        public async Task<ActionResult> GetBatchesByFreshness([FromRoute] Freshness freshness)
         {
             IEnumerable<Batch> batches =
                 await this.AccessService.GetBatches(freshness);
@@ -94,7 +94,7 @@ namespace FelFeltory.Controllers
         /// </returns>
         [HttpPut]
         [Route("AddBatch")]
-        public async Task<IActionResult> AddBatch(
+        public async Task<ActionResult> AddBatch(
             [FromBody] AddBatchRequestBody requestBody
             )
         {
