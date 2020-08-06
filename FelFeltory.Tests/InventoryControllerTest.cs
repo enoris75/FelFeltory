@@ -6,7 +6,6 @@ using Moq;
 using FelFeltory.Controllers;
 using FelFeltory.DataAccess;
 using FelFeltory.DataModels;
-using System.Linq;
 using Xunit;
 using FelFeltory.RequestModels;
 
@@ -107,6 +106,21 @@ namespace FelFeltory.UnitTest
                     request.BatchSize,
                     request.ExpirationDate
                 ), Times.Once);
+        }
+
+        [Fact]
+        public async void VerifyGetOverviewByFreshness()
+        {
+            OverviewByFreshness overview = new OverviewByFreshness();
+            overview.AddBatchesToOverview(batchList);
+
+            mockAccessService.Setup(a => a.GetOverviewByFreshness())
+                .ReturnsAsync(overview);
+
+            ActionResult actionResult = await this.controller.GetOverviewByFreshness();
+            OkObjectResult objResult = Assert.IsType<OkObjectResult>(actionResult);
+            Assert.Equal(200, objResult.StatusCode);
+            mockAccessService.Verify(a => a.GetOverviewByFreshness(), Times.Once);
         }
 
         [Fact]

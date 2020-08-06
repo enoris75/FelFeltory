@@ -84,5 +84,13 @@ namespace FelFeltory.DataAccess
         /// A Task which resolves in a Batch instance with the updated data.
         /// </returns>
         Task<Batch> FixExpirationDate(Guid batchId, DateTime newExpirationDate);
+
+        /// <summary>
+        /// Get the overview of the inventory broke down by the Freshness of the Batches/Portions.
+        /// </summary>
+        /// <returns>
+        /// A Task which resolves in the Overview
+        /// </returns>
+        Task<OverviewByFreshness> GetOverviewByFreshness();
     }
 }
