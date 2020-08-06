@@ -6,31 +6,12 @@ using System.IO;
 
 namespace FelFeltory.DataAccess
 {
-    /// <summary>
-    /// Enum containing the different Data soueces / tables
-    /// </summary>
-    public enum DataSource
-    {
-        /// <summary>
-        /// Contains the list of products and their descriptions.
-        /// </summary>
-        Products,
-        /// <summary>
-        /// Contains the list of batches.
-        /// </summary>
-        Batches,
-        /// <summary>
-        /// Contains the list of batche's events / history.
-        /// </summary>
-        BatchEvents,
-    }
 
     /// <summary>
     /// Class handling the reading and the writing of the data to the different data sources.
     /// </summary>
-    class DataHandler
+    public sealed class DataHandler : IDataHandler
     {
-
         // Note for the reviewer: Method in this class are declared as async even if their implementation
         // at this stage does not requires it (for the data is read from local files).
         // The reason for this is that if we would proceed to an actual implementation

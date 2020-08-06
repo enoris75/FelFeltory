@@ -31,6 +31,7 @@ namespace FelFeltory
                     c.SwaggerDoc("v1", new OpenApiInfo { Title = "FelFeltory Api", Version = "v1" });
                 });
             services.AddControllers();
+            services.AddSingleton<IDataHandler, DataHandler>();
             services.AddSingleton<IDataAccessService, DataAccessService>();
         }
 
