@@ -40,7 +40,8 @@ namespace FelFeltory.Controllers
         /// regardless of their status, etc.
         /// </summary>
         /// <returns>
-        /// An IEnumerable containing all the Batches in the Inventory.
+        /// A Task which resolves in an ActionResult containing
+        /// an IEnumerable containing all the Batches in the Inventory.
         /// </returns>
         [HttpGet]
         [Route("AllBatches")]
@@ -55,7 +56,10 @@ namespace FelFeltory.Controllers
         /// Retrieve all the Batches having the given freshness.
         /// </summary>
         /// <param name="freshness">Freshness of the Batch (e.g. Fresh, Expiring, Expired)</param>
-        /// <returns>An IEnumerable of Batches having the requested Freshness.</returns>
+        /// <returns>
+        /// A Task which resolves in an ActionResult containing 
+        /// an IEnumerable of Batches having the requested Freshness.
+        /// </returns>
         [HttpGet]
         [Route("BatchesByFreshness/{freshness}")]
         public async Task<ActionResult> GetBatchesByFreshness([FromRoute] Freshness freshness)
@@ -133,6 +137,12 @@ namespace FelFeltory.Controllers
             return Ok(updatedBatch);
         }
 
+        /// <summary>
+        /// Gets the breakdown by freshness of the Inventory.
+        /// </summary>
+        /// <returns>
+        /// A Task which resolves in an ActionResult containing the Overview.
+        /// </returns>
         [HttpGet]
         [Route("OverviewByFreshness")]
         public async Task<ActionResult> GetOverviewByFreshness()
@@ -146,7 +156,9 @@ namespace FelFeltory.Controllers
         /// </summary>
         /// <param name="id">ID of the Batch the Expiration Date needs to be fixed.</param>
         /// <param name="newExpirationDate">New Expiration Date</param>
-        /// <returns></returns>
+        /// <returns>
+        /// A Task which resolves in an ActionResult containing the updated Batch.
+        /// </returns>
         [HttpPatch]
         [Route("FixExpirationDate/{batchId}/{newExpirationDate}/")]
         public async Task<ActionResult> FixExpirationDate(
@@ -157,6 +169,38 @@ namespace FelFeltory.Controllers
             Batch batch = await AccessService.FixExpirationDate(
                     batchId,
                     newExpirationDate
+                );
+
+            return Ok(batch);
+        }
+
+        /// <summary>
+        /// Fixes wrongly set Batch size and available quantity.
+        /// </summary>
+        /// <param name="batchId">
+        /// ID of the batch
+        /// </param>
+        /// <param name="newBatchSize">
+        /// Updated Batch size.
+        /// </param>
+        /// <param name="newAvailableQuantity">
+        /// Updated available quantity (number of Portions)
+        /// </param>
+        /// <returns>
+        /// A Task which resolves in an ActionResult containing the updated Batch.
+        /// </returns>
+        [HttpPatch]
+        [Route("FixExpirationDate/{batchId}/{newBatchSize}/{newAvailableQuantity}")]
+        public async Task<ActionResult> FixQuantities(
+            [FromRoute] Guid batchId,
+            [FromRoute] int newBatchSize,
+            [FromRoute] int newAvailableQuantity
+            )
+        {
+            Batch batch = await AccessService.FixQuantities(
+                    batchId,
+                    newBatchSize,
+                    newAvailableQuantity
                 );
 
             return Ok(batch);

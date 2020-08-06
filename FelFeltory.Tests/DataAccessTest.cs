@@ -210,7 +210,27 @@ namespace FelFeltory.UnitTest
 
             mockDataHandler.Verify(m => m.GetData<Batch>(DataSource.Batches), Times.Once);
             mockDataHandler.Verify(m => m.WriteData(DataSource.Batches, It.IsAny<List<Batch>>()), Times.Once);
+        }
 
+        [Fact]
+        public async void VerifyFixQuantities()
+        {
+            int updatedSize = 1444;
+            int updatedAvailableQuantity = 1111;
+
+            mockDataHandler.Setup(m => m.GetData<Batch>(DataSource.Batches))
+                .ReturnsAsync(batchList);
+
+            mockDataHandler.Setup(
+                m => m.WriteData(DataSource.Batches, It.IsAny<List<Batch>>())
+            ).Returns(Task.CompletedTask);
+
+            Batch udpatedBatch = await dataAccess.FixQuantities(testBatch1.Id, updatedSize, updatedAvailableQuantity);
+            Assert.Equal(updatedSize, udpatedBatch.BatchSize);
+            Assert.Equal(updatedAvailableQuantity, udpatedBatch.AvailableQuantity);
+
+            mockDataHandler.Verify(m => m.GetData<Batch>(DataSource.Batches), Times.Once);
+            mockDataHandler.Verify(m => m.WriteData(DataSource.Batches, It.IsAny<List<Batch>>()), Times.Once);
         }
 
         private Product getRandomProduct()
