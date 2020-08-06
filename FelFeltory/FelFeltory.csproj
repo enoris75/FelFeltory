@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FelFeltory.DataAccess\FelFeltory.DataAccess.csproj" />
-    <ProjectReference Include="..\FelFeltory.Models\FelFeltory.Models.csproj" />
+    <ProjectReference Include="..\FelFeltory.DataModels\FelFeltory.DataModels.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using FelFeltory.Models;
+using FelFeltory.DataModels;
 using System.IO;
 
 namespace FelFeltory.DataAccess

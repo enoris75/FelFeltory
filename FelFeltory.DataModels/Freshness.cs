@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FelFeltory.Models
+namespace FelFeltory.DataModels
 {
     /// <summary>
     /// Enum containing the definition of Freshness.

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using FelFeltory.Models;
+using FelFeltory.DataModels;
 using FelFeltory.RequestModels;
 using FelFeltory.DataAccess;
 
@@ -44,7 +44,7 @@ namespace FelFeltory.Controllers
         /// </returns>
         [HttpGet]
         [Route("AllBatches")]
-        public async Task<ActionResult<IEnumerable<Batch>>> GetAllBatches()
+        public async Task<ActionResult> GetAllBatches()
         {
             IEnumerable<Batch> batchList =
                 await this.AccessService.GetAllBatches();
@@ -59,7 +59,7 @@ namespace FelFeltory.Controllers
         /// <returns>An IEnumerable of Batches having the requested Freshness.</returns>
         [HttpGet]
         [Route("BatchesByFreshness/{freshness}")]
-        public async Task<ActionResult<IEnumerable<Batch>>> GetBatchesByFreshness([FromRoute] Freshness freshness)
+        public async Task<ActionResult> GetBatchesByFreshness([FromRoute] Freshness freshness)
         {
             IEnumerable<Batch> batches =
                 await this.AccessService.GetBatches(freshness);
@@ -74,7 +74,7 @@ namespace FelFeltory.Controllers
         /// <returns>An IEnumerable of Events related to the given Batch history.</returns>
         [HttpGet]
         [Route("BatchHistory/{batchId}/")]
-        public async Task<ActionResult<IEnumerable<BatchEvent>>> GetBatchHistory(
+        public async Task<ActionResult> GetBatchHistory(
             [FromRoute] Guid batchId
             )
         {
@@ -94,7 +94,7 @@ namespace FelFeltory.Controllers
         /// </returns>
         [HttpPut]
         [Route("AddBatch")]
-        public async Task<IActionResult> AddBatch(
+        public async Task<ActionResult> AddBatch(
             [FromBody] AddBatchRequestBody requestBody
             )
         {
@@ -116,7 +116,7 @@ namespace FelFeltory.Controllers
         /// </returns>
         [HttpPost]
         [Route("RemoveFromBatch/{batchId}/{quantity}/")]
-        public async Task<IActionResult> RemoveFromBatch(
+        public async Task<ActionResult> RemoveFromBatch(
             [FromRoute] Guid batchId,
             [FromRoute] int quantity
             )
@@ -144,7 +144,7 @@ namespace FelFeltory.Controllers
         /// <returns></returns>
         [HttpPatch]
         [Route("FixExpirationDate/{batchId}/{newExpirationDate}/")]
-        public async Task<IActionResult> FixExpirationDate(
+        public async Task<ActionResult> FixExpirationDate(
             [FromRoute] Guid batchId,
             [FromRoute] DateTime newExpirationDate
             )

@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Reflection.Metadata.Ecma335;
 using Newtonsoft.Json;
 
-namespace FelFeltory.Models
+namespace FelFeltory.DataModels
 {
     public class BatchEvent
     {
@@ -30,5 +31,28 @@ namespace FelFeltory.Models
         /// </summary>
         [JsonProperty("freshness")]
         public Freshness Freshness { get; set; }
+
+        /// <summary>
+        /// Returns a BatchEvent Instance.
+        /// </summary>
+        /// <param name="batch">
+        /// Batch that has been added.
+        /// </param>
+        /// <param name="type">
+        /// Type of the event.
+        /// </param>
+        /// <returns>
+        /// A BatchEvent instance.
+        /// </returns>
+        public static BatchEvent GetInstance(Batch batch, BatchEventType type)
+        {
+            BatchEvent e = new BatchEvent();
+            e.EventType = type;
+            e.BatchId = batch.Id;
+            e.EventDate = DateTime.UtcNow;
+            e.AvailableQuantity = batch.AvailableQuantity;
+            e.Freshness = batch.Freshness;
+            return e;
+        }
     }
 }
