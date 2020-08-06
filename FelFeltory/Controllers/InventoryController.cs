@@ -46,8 +46,7 @@ namespace FelFeltory.Controllers
         [Route("AllBatches")]
         public async Task<ActionResult> GetAllBatches()
         {
-            IEnumerable<Batch> batchList =
-                await this.AccessService.GetAllBatches();
+            IEnumerable<Batch> batchList = await AccessService.GetAllBatches();
 
             return Ok(batchList);
         }
@@ -61,8 +60,7 @@ namespace FelFeltory.Controllers
         [Route("BatchesByFreshness/{freshness}")]
         public async Task<ActionResult> GetBatchesByFreshness([FromRoute] Freshness freshness)
         {
-            IEnumerable<Batch> batches =
-                await this.AccessService.GetBatches(freshness);
+            IEnumerable<Batch> batches = await AccessService.GetBatches(freshness);
 
             return Ok(batches);
         }
@@ -78,8 +76,8 @@ namespace FelFeltory.Controllers
             [FromRoute] Guid batchId
             )
         {
-            IEnumerable<BatchEvent> events =
-                await this.AccessService.GetBatchHistory(batchId);
+            IEnumerable<BatchEvent> events = await AccessService.GetBatchHistory(batchId);
+
             return Ok(events);
         }
 
@@ -98,7 +96,7 @@ namespace FelFeltory.Controllers
             [FromBody] AddBatchRequestBody requestBody
             )
         {
-            Batch newBatch = await this.AccessService.AddBatch(
+            Batch newBatch = await AccessService.AddBatch(
                 requestBody.ProductId,
                 requestBody.BatchSize,
                 requestBody.ExpirationDate
@@ -130,10 +128,17 @@ namespace FelFeltory.Controllers
                 });
             }
 
-            Batch updatedBatch =
-                await this.AccessService.RemoveFromBatch(batchId, quantity);
+            Batch updatedBatch = await AccessService.RemoveFromBatch(batchId, quantity);
 
             return Ok(updatedBatch);
+        }
+
+        [HttpGet]
+        [Route("OverviewByFreshness")]
+        public async Task<ActionResult> OverviewByFreshness()
+        {
+            OverviewByFreshness overview = await AccessService.GetOverviewByFreshness();
+            return Ok(overview);
         }
 
         /// <summary>
@@ -149,7 +154,7 @@ namespace FelFeltory.Controllers
             [FromRoute] DateTime newExpirationDate
             )
         {
-            Batch batch = await this.AccessService.FixExpirationDate(
+            Batch batch = await AccessService.FixExpirationDate(
                     batchId,
                     newExpirationDate
                 );

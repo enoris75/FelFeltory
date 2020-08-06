@@ -15,7 +15,7 @@ namespace FelFeltory.DataAccess
     {
         /// <summary>
         /// Instance of Data Handler used to read and write data.
-       /// </summary>
+        /// </summary>
         private readonly IDataHandler DataHandler;
 
         public DataAccessService(IDataHandler dataHandler)
@@ -204,6 +204,23 @@ namespace FelFeltory.DataAccess
             await DataHandler.WriteData(DataSource.Batches, allBatches);
             // Return the updated batch
             return batch;
+        }
+
+        /// <summary>
+        /// Get the overview of the inventory broke down by the Freshness of the Batches/Portions.
+        /// </summary>
+        /// <returns>
+        /// A Task which resolves in the Overview
+        /// </returns>
+        public async Task<OverviewByFreshness> GetOverviewByFreshness()
+        {
+            OverviewByFreshness overview = new OverviewByFreshness();
+            // Get the list of all Batches
+            List<Batch> allBatches = await DataHandler.GetData<Batch>(DataSource.Batches);
+            // Add the batches to the overview
+            overview.AddBatchesToOverview(allBatches);
+            // return the overview
+            return overview;
         }
 
         #endregion IDataAccessService Implementation
