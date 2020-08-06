@@ -135,7 +135,7 @@ namespace FelFeltory.Controllers
 
         [HttpGet]
         [Route("OverviewByFreshness")]
-        public async Task<ActionResult> OverviewByFreshness()
+        public async Task<ActionResult> GetOverviewByFreshness()
         {
             OverviewByFreshness overview = await AccessService.GetOverviewByFreshness();
             return Ok(overview);
