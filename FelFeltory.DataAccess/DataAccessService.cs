@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using FelFeltory.Models;
+using FelFeltory.DataModels;
 using System.IO;
 using System.Linq;
 
@@ -146,7 +146,7 @@ namespace FelFeltory.DataAccess
             // Get the list of all Batches
             List<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
             // Get the Batch
-            Batch batch = await this.GetBatch(batchId, allBatches);
+            Batch batch = this.GetBatch(batchId, allBatches);
             if (batch.AvailableQuantity < quantity)
             {
                 // Note for the reviewer:
@@ -193,7 +193,7 @@ namespace FelFeltory.DataAccess
             // Get the list of all Batches
             List<Batch> allBatches = await this.GetData<Batch>(this.fileBatches);
             // Get the Batch
-            Batch batch = await this.GetBatch(batchId, allBatches);
+            Batch batch = this.GetBatch(batchId, allBatches);
             // Remove the batch
             allBatches.Remove(batch);
             // Update the batch
@@ -221,7 +221,7 @@ namespace FelFeltory.DataAccess
         /// <returns>
         /// A Task which resolves into the Batch.
         /// </returns>
-        private async Task<Batch> GetBatch(Guid batchId, List<Batch> batches)
+        private Batch GetBatch(Guid batchId, List<Batch> batches)
         {
             // Get the Batch with the correct ID
             List<Batch> selectedBatches = batches.Where(

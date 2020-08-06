@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace FelFeltory.Models
+namespace FelFeltory.DataModels
 {
     /// <summary>
     /// Class representing Products.

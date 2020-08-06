@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FelFeltory.Models;
+using FelFeltory.DataModels;
 
 namespace FelFeltory.UnitTest
 {
@@ -18,6 +18,7 @@ namespace FelFeltory.UnitTest
             Assert.IsTrue(f == Freshness.Fresh);
         }
 
+        [TestMethod]
         public void VerifyExpiresToday()
         {
             Batch b = new Batch();
@@ -28,6 +29,7 @@ namespace FelFeltory.UnitTest
             Assert.IsTrue(f == Freshness.ExpiringToday);
         }
 
+        [TestMethod]
         public void VerifyExpired()
         {
             Batch b = new Batch();

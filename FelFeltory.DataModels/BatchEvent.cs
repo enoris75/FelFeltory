@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace FelFeltory.Models
+namespace FelFeltory.DataModels
 {
     public class BatchEvent
     {
