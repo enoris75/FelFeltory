@@ -125,7 +125,11 @@ namespace FelFeltory.DataAccess
             allBatches.Add(newBatch);
             // Write the list into a File
             await WriteData(this.fileBatches, allBatches);
-
+            // Create an event corresponding to this action
+            BatchEvent e = BatchEvent.GetInstance(newBatch, BatchEventType.Added);
+            // Add the event to the history
+            await AddBatchEventToHistory(e);
+            // return the newly added batch
             return newBatch;
         }
 
@@ -172,6 +176,19 @@ namespace FelFeltory.DataAccess
             allBatches.Add(batch);
             // Update the batches file
             await WriteData(this.fileBatches, allBatches);
+            // Create an event corresponding to this action
+            BatchEvent e;
+            if (batch.AvailableQuantity > 0)
+            {
+                e = BatchEvent.GetInstance(batch, BatchEventType.PortionsRemoved);
+            }
+            else
+            {
+                // the batch is now empty
+                e = BatchEvent.GetInstance(batch, BatchEventType.Emptied);
+            }
+            // Add the event to the history
+            await AddBatchEventToHistory(e);
             // Return the updated batch
             return batch;
         }
@@ -208,6 +225,7 @@ namespace FelFeltory.DataAccess
 
         #endregion IDataAccessService Implementation
 
+        #region Private Methods
         /// <summary>
         /// Gets the batch corresponding to the given ID.
         /// Throws Exceptions if none or more than one are found.
@@ -216,7 +234,7 @@ namespace FelFeltory.DataAccess
         /// ID of the Batch.
         /// </param>
         /// <param name="List">
-        /// List of the Batches that will be serached
+        /// List of the Batches that will be searched
         /// </param>
         /// <returns>
         /// A Task which resolves into the Batch.
@@ -251,11 +269,33 @@ namespace FelFeltory.DataAccess
         }
 
         /// <summary>
+        /// Add the given BatchEvent to the list of all batch events.
+        /// </summary>
+        /// <param name="e">
+        /// Batch Event to be added.
+        /// </param>
+        /// <returns>
+        /// A Tasks which resovles when the operation completes.
+        /// </returns>
+        private async Task AddBatchEventToHistory(BatchEvent e)
+        {
+            // Get all Batches
+            List<BatchEvent> allEvents =
+                await this.GetData<BatchEvent>(this.fileBatchEvents);
+            // Add the new event
+            allEvents.Add(e);
+            // Write the list of events
+            await WriteData(this.fileBatchEvents, allEvents);
+        }
+
+        /// <summary>
         /// Get all data of given type from the given file.
         /// </summary>
         /// <typeparam name="T">Type of data to be read.</typeparam>
         /// <param name="fileName">File containing the data.</param>
-        /// <returns></returns>
+        /// <returns>
+        /// A Task which results in the List containing the requested data.
+        /// </returns>
         private async Task<List<T>> GetData<T>(string fileName)
         {
             using (StreamReader file = File.OpenText(fileName))
@@ -285,5 +325,6 @@ namespace FelFeltory.DataAccess
                 serializer.Serialize(file, data);
             }
         }
+        #endregion
     }
 }

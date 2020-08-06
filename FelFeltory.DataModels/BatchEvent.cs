@@ -44,7 +44,7 @@ namespace FelFeltory.DataModels
         /// <returns>
         /// A BatchEvent instance.
         /// </returns>
-        public static BatchEvent GetAdded(Batch batch, BatchEventType type)
+        public static BatchEvent GetInstance(Batch batch, BatchEventType type)
         {
             BatchEvent e = new BatchEvent();
             e.EventType = type;
